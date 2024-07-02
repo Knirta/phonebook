@@ -1,0 +1,16 @@
+.info {
+  margin-right: 15px;
+}
+
+.text {
+  display: flex;
+  align-items: center;
+}
+
+.text + .text {
+  margin-top: 15px;
+}
+
+.icon {
+  margin-right: 15px;
+}

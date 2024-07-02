@@ -1,0 +1,25 @@
+.form {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  margin-bottom: 35px;
+  border: 1px solid navy;
+  border-radius: 5px;
+}
+
+.form > :not(:first-child) {
+  margin-top: 15px;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.error {
+  font-size: 0.8rem;
+  color: rgb(221, 17, 17);
+}
