@@ -9,8 +9,23 @@ const contactsSlice = createSlice({
       { id: "id-3", name: "Eden Clements", number: "645-17-79" },
       { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
     ],
+    isLoading: false,
+    error: null,
   },
   reducers: {
+    fetchInProgress: (state) => {
+      state.isLoading = true;
+      state.error = null;
+    },
+    fetchSuccess: (state, action) => {
+      state.isLoading = false;
+      state.error = null;
+      state.items = action.payload;
+    },
+    fetchError: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
     addContact: (state, action) => {
       state.items.push(action.payload);
     },
@@ -22,5 +37,11 @@ const contactsSlice = createSlice({
   },
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
+export const {
+  fetchInProgress,
+  fetchSuccess,
+  fetchError,
+  addContact,
+  deleteContact,
+} = contactsSlice.actions;
 export default contactsSlice.reducer;
