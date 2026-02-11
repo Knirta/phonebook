@@ -1,40 +1,52 @@
-import { useEffect } from "react";
+import { useEffect, lazy } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ContactForm from "./ContactForm";
-import SearchBox from "./SearchBox";
-import ContactList from "./ContactList";
-import { fetchContacts } from "../redux/operations.js";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import PrivateRoute from "../components/PrivateRoute";
+import RestrictedRoute from "../components/RestrictedRoute";
+import SharedLayout from "../components/SharedLayout";
+import { refreshUser } from "../redux/auth/operations.js";
 import {
-  selectContacts,
-  selectIsLoading,
-  selectError,
-} from "../redux/contactsSlice.js";
+  selectIsLoggedIn,
+  selectIsRefreshing,
+} from "../redux/auth/selectors.js";
+
+const HomePage = lazy(() => import("../pages/HomePage"));
+const ContactsPage = lazy(() => import("../pages/ContactsPage"));
+const LoginPage = lazy(() => import("../pages/LoginPage"));
+const RegistrationPage = lazy(() => import("../pages/RegistrationPage"));
+// const NotFound = lazy(() => import("../pages/NotFound"));
 
 const App = () => {
   const dispatch = useDispatch();
-
-  const items = useSelector(selectContacts);
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
+  const isRefreshing = useSelector(selectIsRefreshing);
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(refreshUser());
   }, [dispatch]);
 
-  return (
-    <>
-      {isLoading && !error && <p>Loading contacts...</p>}
-      {error && <p>Error: {error}</p>}
-      <h1>Phonebook</h1>
-      <ContactForm />
-      {items.length > 0 && (
-        <>
-          <SearchBox />
-          <ContactList />
-        </>
-      )}
-    </>
-  );
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <SharedLayout />,
+      children: [
+        { index: true, element: <HomePage /> },
+        {
+          element: <PrivateRoute isLoggedIn={isLoggedIn} />,
+          children: [{ path: "contacts", element: <ContactsPage /> }],
+        },
+        {
+          element: <RestrictedRoute isLoggedIn={isLoggedIn} />,
+          children: [
+            { path: "login", element: <LoginPage /> },
+            { path: "register", element: <RegistrationPage /> },
+          ],
+        },
+      ],
+    },
+  ]);
+
+  return !isRefreshing && <RouterProvider router={router} />;
 };
 
 export default App;
